@@ -27,8 +27,8 @@ parameters {
 }
 
 transformed parameters{
-  vector<lower=0, upper=1>[n] omega;
-  omega = inv_logit(x * beta + beta0);
+  vector<lower=0, upper=1>[n] pi;
+  pi = inv_logit(x * beta + beta0);
 }
 
 model {
@@ -38,7 +38,7 @@ model {
   beta0 ~ normal(beta0_mu0, beta0_sigma0);
   beta ~ normal(beta_mu0, beta_sigma0);
   for (i in 1:n) {
-    target += log_mix(omega[i],
+    target += log_mix(pi[i],
                      gumbel_lpdf(y[i] | mu[2], sigma[2]),
                      gumbel_lpdf(y[i] | mu[1], sigma[1]));
   }
@@ -47,7 +47,7 @@ model {
 // log-likelihood to compute loo information criterion
 generated quantities {
   vector[n] log_lik;
-  for (i in 1:n) log_lik[i] = log_mix(omega[i],
+  for (i in 1:n) log_lik[i] = log_mix(pi[i],
                      gumbel_lpdf(y[i] | mu[2], sigma[2]),
                      gumbel_lpdf(y[i] | mu[1], sigma[1]));
 }
